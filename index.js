@@ -16,7 +16,7 @@ app.get('/', (c) => {
 
 // Helper: wait for prediction
 async function waitForPrediction(predictionId) {
-  const maxAttempts = 60;
+  const maxAttempts = 120;
   for (let i = 0; i < maxAttempts; i++) {
     const res = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
       headers: { 'Authorization': `Bearer ${REPLICATE_TOKEN}` }
@@ -50,7 +50,7 @@ app.post('/enhance', async (c) => {
       ? image 
       : `data:image/jpeg;base64,${image}`;
 
-    // SDXL img2img with natural enhancement prompt
+    // Flux QFACES - trained on high quality facial photos
     const res = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
@@ -58,14 +58,18 @@ app.post('/enhance', async (c) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
+        version: "4d1d2ea165dffc2d84792d350e9819e3eeb03dc6ceaffcd9c859bbc2d7301f7e",
         input: {
           image: imageUrl,
-          prompt: "professional portrait photo, DSLR quality, natural skin texture with visible pores, realistic skin tones, sharp details, natural lighting, no artificial smoothing, authentic human features",
-          negative_prompt: "beauty filter, over-smoothed skin, poreless skin, airbrushed, plastic look, CGI, illustration, fake blur, artificial glow, AI artifacts, uncanny valley",
-          prompt_strength: 0.35,  // Very low = minimal change
-          num_inference_steps: 25,
-          guidance_scale: 7,
+          model: "dev",
+          prompt: "photo, high resolution, natural skin texture, visible pores, realistic, QFACES, photograph, detailed facial features, authentic",
+          go_fast: false,
+          lora_scale: 0.5,
+          guidance_scale: 0,  // 0 = maximum identity preservation
+          prompt_strength: 0.25,  // Low = subtle enhancement
+          num_inference_steps: 50,
+          output_format: "png",
+          output_quality: 90,
         }
       })
     });
@@ -76,9 +80,12 @@ app.post('/enhance', async (c) => {
     const output = await waitForPrediction(prediction.id);
     console.log('Enhancement complete:', output);
     
+    // Flux returns array, get first
+    const enhancedUrl = Array.isArray(output) ? output[0] : output;
+    
     return c.json({ 
       success: true, 
-      enhanced_url: output,
+      enhanced_url: enhancedUrl,
     });
 
   } catch (error) {
@@ -102,7 +109,7 @@ app.post('/enhance-url', async (c) => {
 
     console.log('Processing image from URL:', url);
 
-    // SDXL img2img with natural enhancement prompt
+    // Flux QFACES - trained on high quality facial photos
     const res = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
@@ -110,14 +117,18 @@ app.post('/enhance-url', async (c) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
+        version: "4d1d2ea165dffc2d84792d350e9819e3eeb03dc6ceaffcd9c859bbc2d7301f7e",
         input: {
           image: url,
-          prompt: "professional portrait photo, DSLR quality, natural skin texture with visible pores, realistic skin tones, sharp details, natural lighting, no artificial smoothing, authentic human features",
-          negative_prompt: "beauty filter, over-smoothed skin, poreless skin, airbrushed, plastic look, CGI, illustration, fake blur, artificial glow, AI artifacts, uncanny valley",
-          prompt_strength: 0.35,  // Very low = minimal change
-          num_inference_steps: 25,
-          guidance_scale: 7,
+          model: "dev",
+          prompt: "photo, high resolution, natural skin texture, visible pores, realistic, QFACES, photograph, detailed facial features, authentic",
+          go_fast: false,
+          lora_scale: 0.5,
+          guidance_scale: 0,  // 0 = maximum identity preservation
+          prompt_strength: 0.25,  // Low = subtle enhancement
+          num_inference_steps: 50,
+          output_format: "png",
+          output_quality: 90,
         }
       })
     });
@@ -132,9 +143,12 @@ app.post('/enhance-url', async (c) => {
     const output = await waitForPrediction(prediction.id);
     console.log('Enhancement complete:', output);
     
+    // Flux returns array, get first
+    const enhancedUrl = Array.isArray(output) ? output[0] : output;
+    
     return c.json({ 
       success: true, 
-      enhanced_url: output,
+      enhanced_url: enhancedUrl,
     });
 
   } catch (error) {
