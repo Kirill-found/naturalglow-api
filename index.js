@@ -50,7 +50,7 @@ app.post('/enhance', async (c) => {
       ? image 
       : `data:image/jpeg;base64,${image}`;
 
-    // Create prediction
+    // Create prediction with CodeFormer (natural look)
     const res = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
@@ -58,11 +58,13 @@ app.post('/enhance', async (c) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: "0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
+        version: "7de2ea26c616d5bf2245ad0d5e24f0ff9a6204578a5c876db53142edd9d2cd56",
         input: {
-          img: imageUrl,
-          version: "v1.4",
-          scale: 2,
+          image: imageUrl,
+          upscale: 1,
+          face_upsample: true,
+          background_enhance: false,
+          codeformer_fidelity: 0.9,  // High = more natural, less AI
         }
       })
     });
@@ -99,7 +101,7 @@ app.post('/enhance-url', async (c) => {
 
     console.log('Processing image from URL:', url);
 
-    // Create prediction with GFPGAN
+    // Create prediction with CodeFormer (natural look)
     const res = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
@@ -107,11 +109,13 @@ app.post('/enhance-url', async (c) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: "0fbacf7afc6c144e5be9767cff80f25aff23e52b0708f17e20f9879b2f21516c",
+        version: "7de2ea26c616d5bf2245ad0d5e24f0ff9a6204578a5c876db53142edd9d2cd56",
         input: {
-          img: url,
-          version: "v1.4",
-          scale: 2,
+          image: url,
+          upscale: 1,
+          face_upsample: true,
+          background_enhance: false,
+          codeformer_fidelity: 0.9,  // High = more natural, less AI
         }
       })
     });
