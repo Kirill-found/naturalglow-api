@@ -75,6 +75,12 @@ app.post('/enhance', async (c) => {
     });
     
     const prediction = await res.json();
+    console.log('Prediction response:', JSON.stringify(prediction, null, 2));
+    
+    if (prediction.error || !prediction.id) {
+      throw new Error(prediction.error || `Failed to create prediction: ${JSON.stringify(prediction)}`);
+    }
+    
     console.log('Prediction created:', prediction.id);
     
     const output = await waitForPrediction(prediction.id);
