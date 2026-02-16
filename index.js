@@ -50,7 +50,7 @@ app.post('/enhance', async (c) => {
       ? image 
       : `data:image/jpeg;base64,${image}`;
 
-    // Create prediction with CodeFormer (natural look)
+    // SDXL img2img with natural enhancement prompt
     const res = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
@@ -58,13 +58,14 @@ app.post('/enhance', async (c) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: "7de2ea26c616d5bf2245ad0d5e24f0ff9a6204578a5c876db53142edd9d2cd56",
+        version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
         input: {
           image: imageUrl,
-          upscale: 1,
-          face_upsample: true,
-          background_enhance: false,
-          codeformer_fidelity: 0.9,  // High = more natural, less AI
+          prompt: "professional portrait photo, DSLR quality, natural skin texture with visible pores, realistic skin tones, sharp details, natural lighting, no artificial smoothing, authentic human features",
+          negative_prompt: "beauty filter, over-smoothed skin, poreless skin, airbrushed, plastic look, CGI, illustration, fake blur, artificial glow, AI artifacts, uncanny valley",
+          prompt_strength: 0.15,  // Very low = minimal change
+          num_inference_steps: 25,
+          guidance_scale: 7,
         }
       })
     });
@@ -101,7 +102,7 @@ app.post('/enhance-url', async (c) => {
 
     console.log('Processing image from URL:', url);
 
-    // Create prediction with CodeFormer (natural look)
+    // SDXL img2img with natural enhancement prompt
     const res = await fetch('https://api.replicate.com/v1/predictions', {
       method: 'POST',
       headers: {
@@ -109,13 +110,14 @@ app.post('/enhance-url', async (c) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        version: "7de2ea26c616d5bf2245ad0d5e24f0ff9a6204578a5c876db53142edd9d2cd56",
+        version: "7762fd07cf82c948538e41f63f77d685e02b063e37e496e96eefd46c929f9bdc",
         input: {
           image: url,
-          upscale: 1,
-          face_upsample: true,
-          background_enhance: false,
-          codeformer_fidelity: 0.9,  // High = more natural, less AI
+          prompt: "professional portrait photo, DSLR quality, natural skin texture with visible pores, realistic skin tones, sharp details, natural lighting, no artificial smoothing, authentic human features",
+          negative_prompt: "beauty filter, over-smoothed skin, poreless skin, airbrushed, plastic look, CGI, illustration, fake blur, artificial glow, AI artifacts, uncanny valley",
+          prompt_strength: 0.15,  // Very low = minimal change
+          num_inference_steps: 25,
+          guidance_scale: 7,
         }
       })
     });
