@@ -63,7 +63,7 @@ app.post('/enhance', async (c) => {
           image: imageUrl,
           prompt: "professional portrait photo, DSLR quality, natural skin texture with visible pores, realistic skin tones, sharp details, natural lighting, no artificial smoothing, authentic human features",
           negative_prompt: "beauty filter, over-smoothed skin, poreless skin, airbrushed, plastic look, CGI, illustration, fake blur, artificial glow, AI artifacts, uncanny valley",
-          prompt_strength: 0.15,  // Very low = minimal change
+          prompt_strength: 0.35,  // Very low = minimal change
           num_inference_steps: 25,
           guidance_scale: 7,
         }
@@ -115,7 +115,7 @@ app.post('/enhance-url', async (c) => {
           image: url,
           prompt: "professional portrait photo, DSLR quality, natural skin texture with visible pores, realistic skin tones, sharp details, natural lighting, no artificial smoothing, authentic human features",
           negative_prompt: "beauty filter, over-smoothed skin, poreless skin, airbrushed, plastic look, CGI, illustration, fake blur, artificial glow, AI artifacts, uncanny valley",
-          prompt_strength: 0.15,  // Very low = minimal change
+          prompt_strength: 0.35,  // Very low = minimal change
           num_inference_steps: 25,
           guidance_scale: 7,
         }
